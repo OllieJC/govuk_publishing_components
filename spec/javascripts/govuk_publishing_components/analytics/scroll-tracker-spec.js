@@ -30,6 +30,13 @@ describe('GOVUK.ScrollTracker', function () {
       expect((new GOVUK.ScrollTracker(config)).enabled).toBeTruthy()
     })
 
+    it('should be enabled on a tracked page with query params', function () {
+      var config = {}
+      config[window.location.pathname + "?param=value"] = [['Heading', 'A heading']]
+
+      expect((new GOVUK.ScrollTracker(config)).enabled).toBeTruthy()
+    })
+
     it('should not be enabled on an untracked page', function () {
       var config = {
         '/some/other/path': [

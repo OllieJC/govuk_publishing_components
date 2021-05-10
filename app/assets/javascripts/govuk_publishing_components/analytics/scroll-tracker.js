@@ -481,7 +481,7 @@
   }
 
   ScrollTracker.prototype.normalisePath = function (path) {
-    return path.split('/').join('')
+    return path.split('/').join('').split('?')[0]
   }
 
   ScrollTracker.prototype.onScroll = function () {

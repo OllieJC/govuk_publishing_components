@@ -1,0 +1,20 @@
+<%
+  local_assigns[:margin_bottom] ||= 8
+  local_assigns[:margin_bottom] = 8 if local_assigns[:margin_bottom] > 9
+
+  shared_helper = GovukPublishingComponents::Presenters::SharedHelper.new(local_assigns)
+
+  css_classes = %w[gem-c-intervention]
+  css_classes << (shared_helper.get_margin_bottom)
+
+  aria_attributes = {label: 'Intervention'}
+
+%>
+
+<%= tag.section class: css_classes, aria: aria_attributes, role: "region" do %>
+  <h2 class="gem-c-intervention__title">
+    <a href=\"https://www.gov.uk/next-steps-for-your-business\">Check the next steps for your limited company</a>
+  </h2>
+
+  <p class="gem-c-intervention__description"> You might be interested in this because you’ve been browsing guidance relevant to starting a limited company.</p>
+<% end %>

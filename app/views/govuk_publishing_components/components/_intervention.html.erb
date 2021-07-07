@@ -9,8 +9,9 @@
 
   aria_attributes = {label: 'Intervention'}
 
-  variant = request.headers["HTTP_GOVUK_ABTEST_STARTABUSINESSSEGMENT"]
-  is_sab_page = request.headers["HTTP_GOVUK_ABTEST_ISSTARTABUSINESSPAGE"] == "true"
+  request_headers ||= {}
+  variant = request_headers["HTTP_GOVUK_ABTEST_STARTABUSINESSSEGMENT"]
+  is_sab_page = request_headers["HTTP_GOVUK_ABTEST_ISSTARTABUSINESSPAGE"] == "true"
   should_show_intervention = variant == "B" && is_sab_page
 %>
 <% if should_show_intervention %>

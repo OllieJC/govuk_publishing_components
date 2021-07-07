@@ -16,3 +16,7 @@ accessibility_criteria: |
   - always render headings with associated description content, so there are no isolated heading elements inside the component
 examples:
   default:
+    data:
+      request_headers:
+        HTTP_GOVUK_ABTEST_STARTABUSINESSSEGMENT: B
+        HTTP_GOVUK_ABTEST_ISSTARTABUSINESSPAGE: "true"

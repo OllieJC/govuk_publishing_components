@@ -9,12 +9,16 @@
 
   aria_attributes = {label: 'Intervention'}
 
+  variant = request.headers["HTTP_GOVUK_ABTEST_STARTABUSINESSSEGMENT"]
+  is_sab_page = request.headers["HTTP_GOVUK_ABTEST_ISSTARTABUSINESSPAGE"] == "true"
+  should_show_intervention = variant == "B" && is_sab_page
 %>
+<% if should_show_intervention %>
+  <%= tag.section class: css_classes, aria: aria_attributes, role: "region" do %>
+    <h2 class="gem-c-intervention__title">
+      <a href=\"https://www.gov.uk/next-steps-for-your-business\">Check the next steps for your limited company</a>
+    </h2>
 
-<%= tag.section class: css_classes, aria: aria_attributes, role: "region" do %>
-  <h2 class="gem-c-intervention__title">
-    <a href=\"https://www.gov.uk/next-steps-for-your-business\">Check the next steps for your limited company</a>
-  </h2>
-
-  <p class="gem-c-intervention__description"> You might be interested in this because you’ve been browsing guidance relevant to starting a limited company.</p>
+    <p class="gem-c-intervention__description"> You might be interested in this because you’ve been browsing guidance relevant to starting a limited company.</p>
+  <% end %>
 <% end %>

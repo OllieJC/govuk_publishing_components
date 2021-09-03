@@ -1,0 +1,18 @@
+name: Single page notification button
+description: A link that subscribes the user to email notifications to a page
+body: |
+  This component uses JavaScript to check if the user has already subscribed to the current page and updates the state of the button accordingly. By default, the component displays with the "Get emails about this page" state. The component does not render without the `page` parameter.
+accessibility_criteria: |
+  - The bell icon must be presentational and ignored by screen readers.
+shared_accessibility_criteria:
+  - link
+examples:
+  default:
+    description: By default this component prompts the user to subscribe to email notifications to this page. The component uses JavaScript to check if the user has already subscribed to email notifications on the current page. If yes, the state of the component updates accordingly.
+    data:
+      page: '/subscribe-to-this-page'
+  already_subscribed:
+    description: If the user has already subscribed to email notifications about the current page, display the "Stop getting emails about this page" state.
+    data:
+      page: '/unsubscribe-from-this-page'
+      already_subscribed: true

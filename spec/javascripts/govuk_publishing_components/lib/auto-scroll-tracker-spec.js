@@ -47,6 +47,104 @@ describe('GOVUK.AutoScrollTracker', function () {
     expect(scrollTracker2.getWindowDetails).not.toHaveBeenCalled()
   })
 
+  describe('with invalid configuration', function () {
+    beforeEach(function () {
+      var el = document.createElement('div')
+      var data = 'invalid-json'
+      el.setAttribute('data-track-details', data)
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    it('does not start scroll tracking', function () {
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+  })
+
+  describe('with included URLs', function () {
+    beforeEach(function () {
+      var el = document.createElement('div')
+      var data = "{ 'include': [ { 'path': '/test' }, { 'path': '/test2' } ] }"
+      el.setAttribute('data-track-details', data)
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    it('starts scroll tracking if the current URL is included', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(true)
+    })
+
+    it('does not start scroll tracking if the current URL is not included', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test/potato')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+  })
+
+  describe('with excluded URLs', function () {
+    beforeEach(function () {
+      var el = document.createElement('div')
+      var data = "{ 'exclude': [ { 'path': '/test' }, { 'path': '/test2' } ] }"
+      el.setAttribute('data-track-details', data)
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    it('starts scroll tracking if the current URL is not excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test/potato')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(true)
+    })
+
+    it('does not start scroll tracking if the current URL is excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+  })
+
+  describe('with included and excluded URLs', function () {
+    beforeEach(function () {
+      var el = document.createElement('div')
+      var data = "{ 'include': [ { 'path': '/test' }, { 'path': '/test2' } ], 'exclude': [ { 'path': '/test' }, { 'path': '/test3' } ] }"
+      el.setAttribute('data-track-details', data)
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    it('starts scroll tracking if the current URL is included and not excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test2')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(true)
+    })
+
+    it('does not start scroll tracking if the current URL is excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test3')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+
+    it('does not start scroll tracking if the current URL is not included or excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/banana')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+
+    it('does not start scroll tracking if the current URL is both included and excluded', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test')
+      scrollTracker.init()
+
+      expect(window.GOVUK.analyticsVars.scrollTrackerStarted).toEqual(false)
+    })
+  })
+
   describe('when tracking headings', function () {
     var el
 

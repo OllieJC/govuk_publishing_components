@@ -20,13 +20,53 @@ AutoScrollTracker is a GOVUK.Module and can be initialised by adding the relevan
 
 By default, AutoScrollTracker tracks by percentage scrolled. Specifically, it will fire a GA event when the user scrolls to 20%, 40%, 60%, 80% and 100% of the page height.
 
-It can track headings instead of percentages, using this additional option:
+It can track headings instead of percentages, using the `data-track-type` option.
 
 ```html
 <% content_for :extra_head_content do %>
   <meta name="govuk:scroll-tracker" content="" data-module="auto-scroll-tracker" data-track-type="headings"/>
 <% end %>
 ```
+
+As a single template may render multiple pages, options are available to include or exclude only specific URLs, as well as further configuration specifics. This can be achieved by adding JSON to the `data-track-details` attribute.
+
+For example, in the template that renders travel advice pages, the `include` option can be used to only apply scroll tracking to specific pages.
+
+```html
+<% content_for :extra_head_content do %>
+  <%
+    track_details = "{
+      'include': [
+        {
+          'path': '/foreign-travel-advice/benin'
+        },
+        {
+          'path': '/foreign-travel-advice/france'
+        },
+      ]
+    }".squish
+  %>
+  <meta name="govuk:scroll-tracker" content="" data-module="auto-scroll-tracker" data-track-details="<%= track_details %>"/>
+<% end %>
+```
+
+Similarly, the `exclude` option can be used to apply scroll tracking to all pages rendered by this template, apart from those specified.
+
+```html
+<% content_for :extra_head_content do %>
+  <%
+    track_details = "{
+      'exclude': [
+        {
+          'path': '/foreign-travel-advice/iceland'
+        }
+      ]
+    }".squish
+  %>
+  <meta name="govuk:scroll-tracker" content="" data-module="auto-scroll-tracker" data-track-details="<%= track_details %>"/>
+<% end %>
+```
+
 
 ### Behaviour
 

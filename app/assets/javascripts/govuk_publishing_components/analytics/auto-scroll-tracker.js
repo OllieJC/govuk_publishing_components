@@ -31,6 +31,22 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
       return
     }
 
+    var trackDetails = this.$module.getAttribute('data-track-details')
+    if (trackDetails) {
+      try {
+        // Valid JSON doesn't use '', but we can use replace to be forgiving
+        this.config.trackDetails = JSON.parse(trackDetails.replace(/'/g, '"'))
+        if (!this.urlShouldBeTracked()) {
+          window.GOVUK.analyticsVars.scrollTrackerStarted = false
+          return
+        }
+      } catch {
+        // if there's a problem with the config, don't start the tracker
+        window.GOVUK.analyticsVars.scrollTrackerStarted = false
+        return
+      }
+    }
+
     window.GOVUK.analyticsVars.scrollTrackerStarted = true
 
     this.trackType = this.$module.getAttribute('data-track-type')
@@ -67,6 +83,48 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
         }
       }.bind(this), this.config.pageHeightTimeoutDelay)
     }
+  }
+
+  AutoScrollTracker.prototype.foundPath = function (urlList) {
+    if (!urlList) {
+      return false
+    }
+
+    var currentPath = this.getLocation()
+
+    for (var i = 0; i < urlList.length; i++) {
+      if (urlList[i].path === currentPath) {
+        return true
+      }
+    }
+  }
+
+  // if only include URLs, track if path is included
+  // if only exclude URLs, track if path is not excluded
+  // if both only track if included and not excluded
+  AutoScrollTracker.prototype.urlShouldBeTracked = function () {
+    var includeUrls = this.config.trackDetails.include
+    var excludeUrls = this.config.trackDetails.exclude
+
+    var includeUrl = this.foundPath(includeUrls)
+    var excludeUrl = this.foundPath(excludeUrls)
+
+    if (includeUrls && excludeUrls) {
+      if (includeUrl && excludeUrl) {
+        return false
+      } else if (includeUrl) {
+        return true
+      }
+    } else if (includeUrls && includeUrl) {
+      return true
+    } else if (excludeUrls && !excludeUrl) {
+      return true
+    }
+  }
+
+  // this is slightly clumsily in a separate function so we can spoof it for testing
+  AutoScrollTracker.prototype.getLocation = function () {
+    return window.location.pathname
   }
 
   AutoScrollTracker.prototype.onScroll = function () {

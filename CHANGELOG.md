@@ -9,6 +9,7 @@
 
 ## Unreleased
 
+* Extend new scroll tracker functionality ([PR #2411](https://github.com/alphagov/govuk_publishing_components/pull/2411))
 * Update the design of the mobile menu button on the super navigation ([PR #2382](https://github.com/alphagov/govuk_publishing_components/pull/2382))
 * Update positioning and border colour on super navigation search button ([PR #2413](https://github.com/alphagov/govuk_publishing_components/pull/2413))
 

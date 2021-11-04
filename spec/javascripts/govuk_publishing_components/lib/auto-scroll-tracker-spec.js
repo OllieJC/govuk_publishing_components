@@ -145,6 +145,53 @@ describe('GOVUK.AutoScrollTracker', function () {
     })
   })
 
+  describe('with included URLs and specific headings', function () {
+    var el
+
+    beforeEach(function () {
+      var headings = '<main><h1>First heading</h1><h2>Second heading</h2><h2>Third heading</h2></main>'
+      el = document.createElement('div')
+      el.innerHTML = headings
+      document.body.appendChild(el)
+      var data = "{ 'include': [ { 'path': '/test', 'headings': ['First heading', 'Third heading'] } ] }"
+      el.setAttribute('data-track-details', data)
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    afterEach(function () {
+      document.body.removeChild(el)
+    })
+
+    it('only tracks those headings', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test')
+      scrollTracker.init()
+
+      expect(scrollTracker.trackedNodes.length).toEqual(2)
+      expect(scrollTracker.trackedNodes[0].eventData.label).toEqual('First heading')
+      expect(scrollTracker.trackedNodes[1].eventData.label).toEqual('Third heading')
+    })
+  })
+
+  describe('with included URLs and specific percentages', function () {
+    var el
+
+    beforeEach(function () {
+      el = document.createElement('div')
+      var data = "{ 'include': [ { 'path': '/test', 'percentages': [10, 20, 40, 100] } ] }"
+      el.setAttribute('data-track-details', data)
+      el.setAttribute('data-track-type', 'headings')
+      scrollTracker = new GOVUK.Modules.AutoScrollTracker(el)
+    })
+
+    it('tracks those percentages', function () {
+      spyOn(scrollTracker, 'getLocation').and.returnValue('/test')
+      scrollTracker.init()
+
+      expect(scrollTracker.trackType).toEqual('percentages')
+      expect(scrollTracker.config.percentages).toEqual([10, 20, 40, 100])
+    })
+  })
+
   describe('when tracking headings', function () {
     var el
 

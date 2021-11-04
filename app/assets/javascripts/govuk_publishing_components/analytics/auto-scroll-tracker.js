@@ -31,6 +31,7 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
       return
     }
 
+    this.trackType = this.$module.getAttribute('data-track-type')
     var trackDetails = this.$module.getAttribute('data-track-details')
     if (trackDetails) {
       try {
@@ -49,7 +50,6 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
 
     window.GOVUK.analyticsVars.scrollTrackerStarted = true
 
-    this.trackType = this.$module.getAttribute('data-track-type')
     if (this.trackType === 'headings') {
       this.track = new AutoScrollTracker.Heading(this.config)
     } else {
@@ -89,11 +89,21 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
     if (!urlList) {
       return false
     }
-
     var currentPath = this.getLocation()
 
     for (var i = 0; i < urlList.length; i++) {
-      if (urlList[i].path === currentPath) {
+      var thisUrl = urlList[i]
+      if (thisUrl.path === currentPath) {
+        this.config.pageConfig = urlList[i]
+        if (thisUrl.headings) {
+          this.trackType = 'headings'
+          if (thisUrl.headings) {
+            this.config.trackSpecificHeadings = thisUrl.headings
+          }
+        } else if (thisUrl.percentages && Array.isArray(thisUrl.percentages)) {
+          this.trackType = 'percentages'
+          this.config.percentages = thisUrl.percentages
+        }
         return true
       }
     }
@@ -203,15 +213,24 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
 
   // check heading is inside allowed elements, generally ignores everything outside of page content
   AutoScrollTracker.Heading.prototype.findAllowedHeadings = function () {
-    var headings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
     var headingsFound = []
+    var headings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+    var trackSpecificHeadings = this.config.trackSpecificHeadings
 
+    // this is a loop that only happens once as we currently only have one
+    // allowed element for headings to be in - 'main'
     for (var h = 0; h < this.config.allowHeadingsInside.length; h++) {
       var insideElements = document.querySelectorAll(this.config.allowHeadingsInside[h])
       for (var e = 0; e < insideElements.length; e++) {
         var found = insideElements[e].querySelectorAll(headings)
         for (var f = 0; f < found.length; f++) {
-          headingsFound.push(found[f])
+          if (trackSpecificHeadings) {
+            if (trackSpecificHeadings.includes(found[f].textContent.trim())) {
+              headingsFound.push(found[f])
+            }
+          } else {
+            headingsFound.push(found[f])
+          }
         }
       }
     }

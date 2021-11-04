@@ -67,6 +67,28 @@ Similarly, the `exclude` option can be used to apply scroll tracking to all page
 <% end %>
 ```
 
+Tracking of specific headings or percentages can also be applied using the `include` option. Note that tracking specific headings is dependent on the text of those headings remaining constant. If the wording of a tracked heading is changed, tracking will stop working for that heading.
+
+```html
+<% content_for :extra_head_content do %>
+  <%
+    track_details = "{
+      'include': [
+        {
+          'path': '/foreign-travel-advice/france',
+          'headings': ['Check separate travel advice pages for overseas territories of France.', 'Explore the topic']
+        },
+        {
+          'path': '/foreign-travel-advice/benin',
+          'percentages': [25, 50, 75, 100]
+        },
+      ]
+    }".squish
+  %>
+  <meta name="govuk:scroll-tracker" content="" data-module="auto-scroll-tracker" data-track-details="<%= track_details %>"/>
+<% end %>
+```
+
 
 ### Behaviour
 

@@ -20,6 +20,8 @@
     licensing_session: 'essential',
     govuk_contact_referrer: 'essential',
     multivariatetest_cohort_coronavirus_extremely_vulnerable_rate_limit: 'essential',
+    _doNotTrack: 'essential',
+    _globalPrivacyControl: 'essential',
     dgu_beta_banner_dismissed: 'settings',
     global_bar_seen: 'settings',
     govuk_browser_upgrade_dismisssed: 'settings',
@@ -125,13 +127,10 @@
 
   window.GOVUK.checkConsentCookieCategory = function (cookieName, cookieCategory) {
     var currentConsentCookie = window.GOVUK.getConsentCookie()
-
-    // If the consent cookie doesn't exist, but the cookie is in our known list, return true
-    if (!currentConsentCookie && COOKIE_CATEGORIES[cookieName]) {
-      return true
+    // If the consent cookie doesn't exist, use the default
+    if (!currentConsentCookie) {
+      currentConsentCookie = JSON.parse(JSON.stringify(DEFAULT_COOKIE_CONSENT))
     }
-
-    currentConsentCookie = window.GOVUK.getConsentCookie()
 
     // Sometimes currentConsentCookie is malformed in some of the tests, so we need to handle these
     try {

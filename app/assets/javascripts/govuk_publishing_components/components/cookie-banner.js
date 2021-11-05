@@ -45,6 +45,18 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
     if (!this.isInCookiesPage() && !this.isInIframe()) {
       var shouldHaveCookieMessage = (this.$module && window.GOVUK.cookie('cookies_preferences_set') !== 'true')
 
+      if (shouldHaveCookieMessage && window.GOVUK.globalPrivacyControlValue()) {
+        /* if the banner would have shown, but the browser is sending a signal
+        to not track, then treat as a rejection and don't show the banner */
+        shouldHaveCookieMessage = false
+        // handle like a rejection and set default consent cookie
+        window.GOVUK.setDefaultConsentCookie()
+        /* setting the cookies_preferences_set as a session cookie (no date)
+        means that if a user changes the Global Privacy Control or Do Not Track
+        settings in their browser, then the banner will display the next time */
+        window.GOVUK.cookie('cookies_preferences_set', 'true')
+      }
+
       if (shouldHaveCookieMessage) {
         this.$module.style.display = 'block'
 
